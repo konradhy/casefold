@@ -38,12 +38,14 @@ export default function FileUploadBox() {
         onUploadError={(error: unknown) => {
           // Do something with the error.
 
-          alert(`ERROR! ${error}`);
+          alert(`ERROR! `);
         }}
       />
     </>
   );
 }
+
+
 
 
 
