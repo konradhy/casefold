@@ -1,5 +1,7 @@
-import PDFViewer from "@/components/main/pdf-viewer";
 import Note from "@/components/main/note";
+
+import PDFSpace from "@/components/main/pdf-space";
+import PDFViewer from "@/components/main/pdf-viewer";
 
 export default function Home() {
   return (
@@ -7,9 +9,8 @@ export default function Home() {
       <div className="col-span-2 flex justify-center items-center h-[750px] shadow-2xl ">
         <PDFViewer />
       </div>
-
       <div className="col-span-2 flex justify-center items-center shadow-2xl">
-       <Note/>
+        <Note />
       </div>
     </div>
   );
@@ -22,4 +23,26 @@ export default function Home() {
 2. Add Seperator
 3. Add resizable pannels
 
+Don't worry about how pretty it looks on the outside. Instead, focus on the code being senior and the functionality.
+
+To do:
+When I upload a PDF I generate a summarized page by page conversion on the blocknote
+1. When I upload a pdf I extract the text. 
+  - 
+1. In the future ondocumentload can be used. 
+
+1. Make a screen for user to upload the pdf
+2. Upon upload we first add it to pdf viewer to render on screen
+3. Then we upload
+
+When I scroll the pdf I scroll the blocknote
+
 */
+
+
+
+
+
+
+
+
