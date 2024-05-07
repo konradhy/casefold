@@ -1,13 +1,11 @@
 import Note from "@/components/main/note";
-
-import PDFSpace from "@/components/main/pdf-space";
-import PDFViewer from "@/components/main/pdf-viewer";
+import FileUploadBox from "@/components/main/file-upload-box";
 
 export default function Home() {
   return (
     <div className="grid grid-cols-4 gap-4 m-4 bg-background">
       <div className="col-span-2 flex justify-center items-center h-[750px] shadow-2xl ">
-        <PDFViewer />
+        <FileUploadBox />
       </div>
       <div className="col-span-2 flex justify-center items-center shadow-2xl">
         <Note />
@@ -36,13 +34,4 @@ When I upload a PDF I generate a summarized page by page conversion on the block
 3. Then we upload
 
 When I scroll the pdf I scroll the blocknote
-
 */
-
-
-
-
-
-
-
-

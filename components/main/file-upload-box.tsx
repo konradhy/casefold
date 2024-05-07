@@ -7,7 +7,7 @@
 6. 
 */
 "use client";
-
+import { useState } from "react";
 import Link from "next/link";
 import { UploadDropzone, UploadFileResponse } from "@xixixao/uploadstuff/react";
 import "@xixixao/uploadstuff/react/styles.css";
@@ -18,32 +18,52 @@ import { api } from "@/convex/_generated/api";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 
+import PDFViewer from "./pdf-viewer";
+
 export default function FileUploadBox() {
+  const [fileUrl, setFileUrl] = useState<string | null>(null);
   const generateUploadUrl = useMutation(api.files.generateUploadUrl);
   const saveStorageId = useMutation(api.files.saveStorageId);
+
   const saveAfterUpload = async (uploaded: UploadFileResponse[]) => {
-    await saveStorageId({ storageId: (uploaded[0].response as any).storageId });
+    const newUrl = await saveStorageId({
+      storageId: (uploaded[0].response as any).storageId,
+    });
+    setFileUrl(newUrl);
   };
 
   return (
     <>
-      {}
-      <UploadDropzone
-        uploadUrl={generateUploadUrl}
-        fileTypes={{
-          "application/pdf": [".pdf"],
-          "image/*": [".png", ".gif", ".jpeg", ".jpg"],
-        }}
-        onUploadComplete={saveAfterUpload}
-        onUploadError={(error: unknown) => {
-          // Do something with the error.
+      {!fileUrl ? (
+        <UploadDropzone
+          uploadUrl={generateUploadUrl}
+          fileTypes={{
+            "application/pdf": [".pdf"],
+            "image/*": [".png", ".gif", ".jpeg", ".jpg"],
+          }}
+          onUploadComplete={saveAfterUpload}
+          onUploadError={(error: unknown) => {
+            // Do something with the error.
 
-          alert(`ERROR! `);
-        }}
-      />
+            alert(`ERROR! `);
+          }}
+        />
+      ) : (
+        <PDFViewer fileUrl={fileUrl} />
+      )}
     </>
   );
 }
+
+
+
+
+
+
+
+
+
+
 
 
 
