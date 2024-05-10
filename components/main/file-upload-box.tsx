@@ -19,17 +19,21 @@ import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 
 import PDFViewer from "./pdf-viewer";
+import { useDocument } from "@/app/(main)/DocumentContext";
 
 export default function FileUploadBox() {
   const [fileUrl, setFileUrl] = useState<string | null>(null);
+  const { setFileId, setPageNumber } = useDocument();
   const generateUploadUrl = useMutation(api.files.generateUploadUrl);
   const saveStorageId = useMutation(api.files.saveStorageId);
 
   const saveAfterUpload = async (uploaded: UploadFileResponse[]) => {
-    const newUrl = await saveStorageId({
+    const fileData = await saveStorageId({
       storageId: (uploaded[0].response as any).storageId,
     });
-    setFileUrl(newUrl);
+    setFileUrl(fileData.fileUrl);
+    setFileId(fileData.id);
+    setPageNumber(0);
   };
 
   return (
@@ -54,6 +58,11 @@ export default function FileUploadBox() {
     </>
   );
 }
+
+
+
+
+
 
 
 

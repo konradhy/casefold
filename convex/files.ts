@@ -1,5 +1,5 @@
 import { v } from "convex/values";
-import { mutation, query } from "./_generated/server";
+import { internalMutation, mutation, query } from "./_generated/server";
 import { Id } from "./_generated/dataModel";
 import { internal } from "./_generated/api";
 
@@ -35,7 +35,42 @@ export const saveStorageId = mutation({
       id,
     });
 
-    return fileUrl;
+    return { fileUrl, id };
   },
 });
+
+export const insertSimplifiedPageTexts = internalMutation({
+  args: {
+    id: v.id("files"),
+    simplifiedPageTexts: v.array(v.string()),
+  },
+  handler: async (ctx, args) => {
+    await ctx.db.patch(args.id, {
+      simplifiedPageTexts: args.simplifiedPageTexts,
+    });
+  },
+});
+
+export const getPageText = query({
+  args: {
+    fileId: v.id("files"),
+    pageNumber: v.number(),
+  },
+  handler: async (ctx, args) => {
+    //do an auth check here
+
+    const file = await ctx.db.get(args.fileId);
+    if (!file || !file.simplifiedPageTexts) {
+      return null;
+    }
+    console.log(file.simplifiedPageTexts[0]);
+    return file.simplifiedPageTexts[0];
+  },
+});
+
+
+
+
+
+
 

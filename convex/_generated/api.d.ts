@@ -16,6 +16,7 @@ import type {
 } from "convex/server";
 import type * as files from "../files.js";
 import type * as ingest_extract from "../ingest/extract.js";
+import type * as ingest_textTransformServices from "../ingest/textTransformServices.js";
 
 /**
  * A utility for referencing Convex functions in your app's API.
@@ -28,6 +29,7 @@ import type * as ingest_extract from "../ingest/extract.js";
 declare const fullApi: ApiFromModules<{
   files: typeof files;
   "ingest/extract": typeof ingest_extract;
+  "ingest/textTransformServices": typeof ingest_textTransformServices;
 }>;
 export declare const api: FilterApi<
   typeof fullApi,

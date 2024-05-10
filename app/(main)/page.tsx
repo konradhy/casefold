@@ -1,7 +1,8 @@
 import Note from "@/components/main/note";
 import FileUploadBox from "@/components/main/file-upload-box";
+import { useContext } from "react";
 
-export default function Home() {
+export default function Main() {
   return (
     <div className="grid grid-cols-4 gap-4 m-4 bg-background">
       <div className="col-span-2 flex justify-center items-center h-[750px] shadow-2xl ">
@@ -34,4 +35,15 @@ When I upload a PDF I generate a summarized page by page conversion on the block
 3. Then we upload
 
 When I scroll the pdf I scroll the blocknote
+
+
+
+
 */
+
+
+
+
+
+
+
