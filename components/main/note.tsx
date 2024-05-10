@@ -4,13 +4,13 @@ import { useDocument } from "@/app/(main)/DocumentContext";
 import { useQuery } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import { Id } from "@/convex/_generated/dataModel";
+import { PartialBlock } from "@blocknote/core";
 
 const Editor = dynamic(() => import("./editor"), { ssr: false });
 
 export default function Note() {
   const { fileId, pageNumber } = useDocument();
   const fileIdTyped: Id<"files"> = fileId as unknown as Id<"files">;
-
   const shouldQuery = fileId != null && pageNumber != null;
   const pageText = useQuery(
     api.files.getPageText,
@@ -22,11 +22,12 @@ export default function Note() {
       : "skip",
   );
 
+  if (!pageText) {
+    return null;
+  }
   return (
     <div>
-      {pageText}
-      {pageNumber}
-      <Editor />
+      <Editor pageText={pageText} />
     </div>
   );
 }
@@ -36,12 +37,3 @@ export default function Note() {
 
 
 */
-
-
-
-
-
-
-
-
-
