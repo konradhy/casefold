@@ -1,25 +1,55 @@
 "use client";
 import { BlockNoteView, useCreateBlockNote } from "@blocknote/react";
-import { BlockNoteEditor, PartialBlock } from "@blocknote/core";
+import { BlockNoteEditor, PartialBlock, Block } from "@blocknote/core";
 import "@blocknote/core/fonts/inter.css";
 import "@blocknote/react/style.css";
+import { Id } from "@/convex/_generated/dataModel";
+import { useMutation } from "convex/react";
+import { api } from "@/convex/_generated/api";
+import { useMemo } from "react";
 
 interface EditorProps {
-  pageText: string; // Assuming pageText is an array of PartialBlock
+  pageText: string;
+  pageNumber: number;
+  fileId: Id<"files">;
 }
 
-export default function Editor({ pageText }: EditorProps) {
+export default function Editor({ pageText, pageNumber, fileId }: EditorProps) {
+  const savePageText = useMutation(api.files.savePageText);
+
+  const handleSave = async (jsonBlocks: Block[]) => {
+    console.log("Saving page text");
+
+    await savePageText({
+      fileId: fileId,
+      pageNumber: pageNumber,
+      pageText: JSON.stringify(jsonBlocks),
+    });
+  };
+
   //This can be improved by grabing each paragraph and pass each paragraph as their own block. You can also utelize the children prop to pass in the children of the block
   //I should also use special formatting to make it clear that it's AI generated as opposed to your own personal notes
-  const initialContent: PartialBlock[] = [
-    {
-      content: pageText,
-    },
-  ];
 
-  const editor: BlockNoteEditor = useCreateBlockNote({
-    initialContent: initialContent,
-  });
+  // const editor: BlockNoteEditor = use
+  // useCreateBlockNote({
+  //   initialContent: initialContent,
+  // });
+  const editor = useMemo(() => {
+    const initialContent: PartialBlock[] = [
+      {
+        content: pageText,
+      },
+    ];
 
-  return <BlockNoteView editor={editor} />;
+    return BlockNoteEditor.create({ initialContent });
+  }, [pageText]);
+
+  return (
+    <BlockNoteView
+      editor={editor}
+      onChange={() => {
+        handleSave(editor.document);
+      }}
+    />
+  );
 }

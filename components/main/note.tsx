@@ -4,7 +4,6 @@ import { useDocument } from "@/app/(main)/DocumentContext";
 import { useQuery } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import { Id } from "@/convex/_generated/dataModel";
-import { PartialBlock } from "@blocknote/core";
 
 const Editor = dynamic(() => import("./editor"), { ssr: false });
 
@@ -22,12 +21,17 @@ export default function Note() {
       : "skip",
   );
 
-  if (!pageText) {
+  if (!pageText || !fileIdTyped || pageNumber == null) {
     return null;
   }
+
   return (
     <div>
-      <Editor pageText={pageText} />
+      <Editor
+        pageText={pageText}
+        pageNumber={pageNumber || 0}
+        fileId={fileIdTyped}
+      />
     </div>
   );
 }

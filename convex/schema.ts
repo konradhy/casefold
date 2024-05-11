@@ -11,7 +11,6 @@ export default defineSchema({
     updatedAt: v.string(),
     isArchived: v.boolean(),
     simplifiedPageTexts: v.optional(v.array(v.string())),
+    noteBlocks: v.optional(v.array(v.string())),
   }),
 });
-
-

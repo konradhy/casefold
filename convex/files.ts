@@ -68,9 +68,31 @@ export const getPageText = query({
   },
 });
 
+export const savePageText = mutation({
+  args: {
+    fileId: v.id("files"),
+    pageNumber: v.number(),
+    pageText: v.string(),
+  },
+  handler: async (ctx, args) => {
+    const file = await ctx.db.get(args.fileId);
+    if (!file) {
+      return null;
+    }
 
+    let noteBlocks = file.noteBlocks || [];
+    //because maybe we somehow skipped pages.
+    if (args.pageNumber >= noteBlocks.length) {
+      noteBlocks = [
+        ...noteBlocks,
+        ...new Array(args.pageNumber - noteBlocks.length).fill(""),
+      ];
+    }
 
+    noteBlocks[args.pageNumber] = args.pageText;
 
-
-
-
+    await ctx.db.patch(args.fileId, {
+      noteBlocks,
+    });
+  },
+});
