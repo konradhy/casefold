@@ -20,11 +20,15 @@ export default function Editor({ pageText, pageNumber, fileId }: EditorProps) {
   const handleSave = async (jsonBlocks: Block[]) => {
     console.log("Saving page text");
 
+   try {
     await savePageText({
       fileId: fileId,
       pageNumber: pageNumber,
       pageText: JSON.stringify(jsonBlocks),
     });
+  } catch (error) {
+    console.error("Failed to save page text", error);
+  }
   };
 
   //This can be improved by grabing each paragraph and pass each paragraph as their own block. You can also utelize the children prop to pass in the children of the block
@@ -48,7 +52,8 @@ export default function Editor({ pageText, pageNumber, fileId }: EditorProps) {
     <BlockNoteView
       editor={editor}
       onChange={() => {
-        handleSave(editor.document);
+    
+        void handleSave(editor.document);
       }}
     />
   );
