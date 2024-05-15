@@ -1,31 +1,37 @@
-import { v } from "convex/values";
+import { ConvexError, v } from "convex/values";
 import { internalMutation, mutation, query } from "./_generated/server";
 import { Id } from "./_generated/dataModel";
 import { internal } from "./_generated/api";
 
 export const generateUploadUrl = mutation({
-  args: {},
   handler: async (ctx) => {
     return await ctx.storage.generateUploadUrl();
   },
 });
 
+//rename to saveFile
 export const saveStorageId = mutation({
   args: {
     storageId: v.string(),
+    fileName: v.string(),
+    fileType: v.string(),
   },
   handler: async (ctx, args) => {
+    const identity = await ctx.auth.getUserIdentity();
+    if (!identity) {
+      throw new ConvexError("Identity not found");
+    }
+
     const id = await ctx.db.insert("files", {
-      storageId: args.storageId,
-      userId: "123",
-      fileType: "pdf",
-      fileName: "test",
-      createdAt: "test",
-      updatedAt: "test",
+      storageId: args.storageId as Id<"_storage">,
+      userId: identity.tokenIdentifier,
+      fileType: args.fileType,
+      fileName: args.fileName,
+      updatedAt: "new",
       isArchived: false,
     });
 
-    const fileUrl = await ctx.storage.getUrl(args.storageId as Id<"_storage">);
+    const fileUrl = await ctx.storage.getUrl(args.storageId);
 
     if (fileUrl === null) {
       throw new Error("File not found");
@@ -63,8 +69,23 @@ export const getPageText = query({
     if (!file || !file.simplifiedPageTexts) {
       return null;
     }
-    console.log(file.simplifiedPageTexts[0]);
-    return file.simplifiedPageTexts[0];
+
+    return file.simplifiedPageTexts[args.pageNumber];
+  },
+});
+
+export const getBlock = query({
+  args: {
+    fileId: v.id("files"),
+    pageNumber: v.number(),
+  },
+  handler: async (ctx, args) => {
+    const file = await ctx.db.get(args.fileId);
+    if (!file || !file.noteBlocks) {
+      return null;
+    }
+
+    return file.noteBlocks[args.pageNumber];
   },
 });
 
@@ -80,8 +101,11 @@ export const savePageText = mutation({
       return null;
     }
 
+    console.log("grabs the file", file._id);
     let noteBlocks = file.noteBlocks || [];
     //because maybe we somehow skipped pages.
+    console.log("checks noteBlocks", noteBlocks.length);
+    console.log("checks pageNumber", args.pageNumber);
     if (args.pageNumber >= noteBlocks.length) {
       noteBlocks = [
         ...noteBlocks,
@@ -94,5 +118,61 @@ export const savePageText = mutation({
     await ctx.db.patch(args.fileId, {
       noteBlocks,
     });
+  },
+});
+
+export const getFilesForUser = query({
+  handler: async (ctx) => {
+    const identity = await ctx.auth.getUserIdentity();
+    if (!identity) {
+      console.log(identity);
+      throw new Error("Unauthenticated");
+    }
+
+    // const userId = identity.subject
+    const files = await ctx.db
+      .query("files")
+      .withIndex("by_userId", (q) => q.eq("userId", identity.tokenIdentifier))
+      .collect();
+
+    return files;
+  },
+});
+
+export const getFile = query({
+  args: {
+    fileId: v.optional(v.id("files")),
+  },
+  handler: async (ctx, args) => {
+    const identity = await ctx.auth.getUserIdentity();
+    if (!identity) {
+      throw new Error("Unauthenticated not logged in ");
+      console.log("Unauthenticated");
+    }
+    if (!args.fileId) {
+      return null;
+    }
+    const isValidId = ctx.db.normalizeId("files", args.fileId);
+
+    if (!isValidId) {
+      console.log("Invalid id");
+      return null;
+    }
+
+    const file = await ctx.db.get(args.fileId);
+    if (!file) {
+      return null;
+    }
+    //check if the file belongs to the user
+    if (file.userId !== identity.tokenIdentifier) {
+      throw new Error("Unauthorized");
+    }
+
+    const fileUrl = await ctx.storage.getUrl(file.storageId);
+    if (fileUrl === null) {
+      throw new Error("File not found");
+    }
+
+    return fileUrl;
   },
 });

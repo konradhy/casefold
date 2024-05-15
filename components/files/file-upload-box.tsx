@@ -7,8 +7,9 @@
 6. 
 */
 "use client";
-import { useState } from "react";
-import Link from "next/link";
+import { use, useEffect, useState } from "react";
+import { useParams } from "next/navigation";
+
 import { UploadDropzone, UploadFileResponse } from "@xixixao/uploadstuff/react";
 import "@xixixao/uploadstuff/react/styles.css";
 
@@ -19,18 +20,41 @@ import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 
 import PDFViewer from "./pdf-viewer";
-import { useDocument } from "@/app/(main)/DocumentContext";
+import { useDocument } from "@/app/(main)/files/DocumentContext";
+import { Id } from "@/convex/_generated/dataModel";
 
 export default function FileUploadBox() {
+  const params = useParams();
+  const fileId = params.fileId;
+
   const [fileUrl, setFileUrl] = useState<string | null>(null);
   const { setFileId, setPageNumber } = useDocument();
   const generateUploadUrl = useMutation(api.files.generateUploadUrl);
   const saveStorageId = useMutation(api.files.saveStorageId);
 
+  const fetchedFileUrl = useQuery(
+    api.files.getFile,
+    fileId !== null
+      ? {
+          fileId: fileId as Id<"files">,
+        }
+      : "skip",
+  );
+
+  useEffect(() => {
+    if (fetchedFileUrl) {
+      setFileUrl(fetchedFileUrl);
+      setFileId(fileId as string);
+    }
+  }, [fetchedFileUrl]);
+
   const saveAfterUpload = async (uploaded: UploadFileResponse[]) => {
     const fileData = await saveStorageId({
       storageId: (uploaded[0].response as any).storageId,
+      fileName: uploaded[0].name,
+      fileType: uploaded[0].type,
     });
+
     setFileUrl(fileData.fileUrl);
     setFileId(fileData.id);
     setPageNumber(0);
@@ -58,25 +82,3 @@ export default function FileUploadBox() {
     </>
   );
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

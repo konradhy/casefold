@@ -1,19 +1,20 @@
 "use client";
-import { DocumentProvider } from "./DocumentContext";
+import { Navbar } from "@/components/navbar";
 
-export default function RootLayout({
+import { Authenticated } from "convex/react";
+
+export default function MainLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
   return (
-    <div>
-      <DocumentProvider>{children} </DocumentProvider>
-    </div>
+    <>
+      <Authenticated>
+        <Navbar />
+
+        {children}
+      </Authenticated>
+    </>
   );
 }
-
-
-
-
-
