@@ -9,7 +9,7 @@ export default function MainLayout({
 }) {
   return (
     <>
-      <div className="flex  ">
+      <div className="flex ">
         <Navigation />
         {children}
       </div>

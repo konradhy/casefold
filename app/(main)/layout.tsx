@@ -11,9 +11,11 @@ export default function MainLayout({
   return (
     <>
       <Authenticated>
-        <Navbar />
+        <div className=" bg-[url('/background.jpg')] bg-transparent bg-cover bg-center backdrop-blur">
+          <Navbar />
 
-        {children}
+          {children}
+        </div>
       </Authenticated>
     </>
   );

@@ -31,8 +31,7 @@ export const InfoCard: React.FC<InfoCardProps> = ({
       onClick={() => {
         router.push(`/files/${id}`);
       }}
-      className="cursor-pointer border border-gray-300 p-4 bg-white shadow rounded"
-           
+      className="cursor-pointer bg-white/20 dark:bg-gray-800/40 backdrop-blur-lg shadow-xl rounded-xl overflow-hidden border border-transparent dark:hover:bg-gray-700/50 hover:bg-orange-100/40 transition ease-in-out duration-300 h-full hover:shadow-xl"
     >
       <CardHeader>
         <Avatar>

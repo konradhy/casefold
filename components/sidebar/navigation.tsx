@@ -160,7 +160,7 @@ export const Navigation = () => {
         <nav className="mt-4 ">
           <TooltipProvider>
             <Nav isCollapsed={isIconised} links={topLinks} />
-            <Separator />
+            <Separator className="bg-stone-400" />
 
             <div
               className={`flex items-center ${isIconised ? "justify-center" : "justify-start"} px-4`}
@@ -174,7 +174,7 @@ export const Navigation = () => {
           onClick={resetWidth}
         >
           <div className="group-hover/sidebar:opacity-100 transition cursor-ew-resize absolute h-full w-1 right-0 top-0">
-            <div className=" group-hover/sidebar:opacity-100 transition cursor-ew-resize absolute h-full w-[1px] bg-primary/40 right-0 top-0 " />
+            <div className=" group-hover/sidebar:opacity-100 transition cursor-ew-resize absolute h-full w-[1px] bg-stone-400 right-0 top-0 " />
           </div>
           <GripVertical className="h-6 w-6 group-hover/sidebar transition cursor-ew-resize   " />
         </div>

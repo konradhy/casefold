@@ -122,14 +122,34 @@ export const savePageText = mutation({
 });
 
 export const getFilesForUser = query({
-  handler: async (ctx) => {
+  args: {
+    searchString: v.optional(v.string()),
+  },
+  handler: async (ctx, args) => {
     const identity = await ctx.auth.getUserIdentity();
     if (!identity) {
       console.log(identity);
       throw new Error("Unauthenticated");
     }
+    if (args.searchString) {
+      const files = await ctx.db
+        .query("files")
+        .withIndex("by_userId", (q) => q.eq("userId", identity.tokenIdentifier))
+        .collect();
 
-    // const userId = identity.subject
+      console.log(" search string", args.searchString);
+
+      const filteredFiles = files.filter((file) =>
+        args.searchString
+          ? file.fileName
+              .toLowerCase()
+              .includes(args.searchString.toLowerCase())
+          : false,
+      );
+
+      return filteredFiles;
+    }
+
     const files = await ctx.db
       .query("files")
       .withIndex("by_userId", (q) => q.eq("userId", identity.tokenIdentifier))
